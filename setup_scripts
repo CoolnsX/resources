@@ -46,10 +46,10 @@ $pkg_mgr $pkg_spec
 if [ -n "$install_dir" ]; then
 	cd "$install_dir" || exit 1
 	mkdir ".shortcuts"
-	cp ./* ".shortcuts/"
+	cp * .shortcuts
 	touch .hushlogin
 	mkdir ".config"
 	git clone "https://github.com/zsh-users/zsh-syntax-highlighting" "$install_dir/.config/zsh-syntax"
-	curl -s "https://raw.githubusercontent.com/CoolnsX/hyprdots/master/.zshrc" | sed '$d' > "$install_dir/.zshrc"
-	printf 'source $HOME/.config/zsh-syntax/zsh-syntax-highlighting.zsh' >> .zshrc
+	curl -s "https://raw.githubusercontent.com/CoolnsX/hyprdots/master/.zshrc" | sed '$d' > $install_dir/.zshrc
+	printf 'source $HOME/.config/zsh-syntax/zsh-syntax-highlighting.zsh' >> $install_dir/.zshrc
 fi
