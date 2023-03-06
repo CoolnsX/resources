@@ -1,0 +1,55 @@
+#!/bin/sh
+
+die() {
+	printf "\33[2K\r\033[1;31m%s\033[0m\n" "$*" >&2
+	exit 1
+}
+
+
+trap "exit 1" INT HUP
+
+#check your os
+case $(uname -o) in
+	*ndroid*) 	#termux
+		install_dir="$HOME"
+		pkg_mgr="pkg in"
+		pkg_upd="pkg up -y"
+		pkg_spec="openssl-tool"
+		cd ..
+		rm -rdf "$HOME"
+		gh_user="https://github.com/"
+		;;
+	*)	#arch linux
+		pkg_mgr="doas pacman -S --needed"
+		pkg_upd="doas pacman -Syyu"
+		pkg_spec="mpv bemenu-wayland"
+		command -v doas >/dev/null || die "Please install doas!!!"
+		gh_user="git@github.com:"
+		;;
+esac
+
+#installing git
+$pkg_mgr git
+
+#cloning repo
+git clone ${gh_user}coolnsx/repos_scripts $install_dir
+
+#updating system
+$pkg_upd
+
+#installing common pkgs
+$pkg_mgr aria2 fzf ffmpeg python python-pip ncurses starship
+
+#installing os-specific pkgs
+$pkg_mgr $pkg_spec
+
+if [ -n "$install_dir" ]; then
+	cd "$install_dir" || exit 1
+	mkdir ".shortcuts"
+	cp ./* ".shortcuts/"
+	touch .hushlogin
+	mkdir ".config"
+	git clone "https://github.com/zsh-users/zsh-syntax-highlighting" "$install_dir/.config/zsh-syntax"
+	curl -s "https://raw.githubusercontent.com/CoolnsX/hyprdots/master/.zshrc" | sed '$d' > "$install_dir/.zshrc"
+	printf 'source $HOME/.config/zsh-syntax/zsh-syntax-highlighting.zsh' >> .zshrc
+fi
