@@ -12,7 +12,7 @@ trap "exit 1" INT HUP
 case $(uname -o) in
 	*ndroid*) 	#termux
 		install_dir="$HOME"
-		pkg_mgr="pkg in"
+		pkg_mgr="pkg in -y"
 		pkg_upd="pkg up -y"
 		pkg_spec="openssl-tool"
 		cd ..
@@ -20,7 +20,7 @@ case $(uname -o) in
 		gh_user="https://github.com/"
 		;;
 	*)	#arch linux
-		pkg_mgr="doas pacman -S --needed"
+		pkg_mgr="doas pacman -S --needed --no-confirm"
 		pkg_upd="doas pacman -Syyu"
 		pkg_spec="mpv bemenu-wayland"
 		command -v doas >/dev/null || die "Please install doas!!!"
