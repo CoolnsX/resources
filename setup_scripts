@@ -5,18 +5,15 @@ die() {
 	exit 1
 }
 
-
 trap "exit 1" INT HUP
 
 #check your os
 case $(uname -o) in
 	*ndroid*) 	#termux
-		install_dir="$HOME"
+		install_dir="$HOME/.shortcuts"
 		pkg_mgr="pkg in -y"
 		pkg_upd="pkg up -y"
 		pkg_spec="openssl-tool"
-		cd ..
-		rm -rdf "$HOME"
 		gh_user="https://github.com/"
 		;;
 	*)	#arch linux
@@ -28,14 +25,14 @@ case $(uname -o) in
 		;;
 esac
 
+#updating system
+$pkg_upd
+
 #installing git
 $pkg_mgr git
 
 #cloning repo
 git clone ${gh_user}coolnsx/repos_scripts $install_dir
-
-#updating system
-$pkg_upd
 
 #installing common pkgs
 $pkg_mgr aria2 fzf ffmpeg python python-pip ncurses starship
@@ -44,12 +41,8 @@ $pkg_mgr aria2 fzf ffmpeg python python-pip ncurses starship
 $pkg_mgr $pkg_spec
 
 if [ -n "$install_dir" ]; then
-	cd "$install_dir" || exit 1
-	mkdir ".shortcuts"
-	cp * .shortcuts
-	touch .hushlogin
-	mkdir ".config"
-	git clone "https://github.com/zsh-users/zsh-syntax-highlighting" "$install_dir/.config/zsh-syntax"
-	curl -s "https://raw.githubusercontent.com/CoolnsX/hyprdots/master/.zshrc" | sed '$d' > $install_dir/.zshrc
-	printf 'source $HOME/.config/zsh-syntax/zsh-syntax-highlighting.zsh' >> $install_dir/.zshrc
+	[ -d "$HOME/.config" ] || mkdir "$HOME/.config"
+	git clone "https://github.com/zsh-users/zsh-syntax-highlighting" "$HOME/.config/zsh-syntax"
+	curl -s "https://raw.githubusercontent.com/CoolnsX/hyprdots/master/zsh/zshrc" | sed '$d' > $HOME/.zshrc
+	printf 'source $HOME/.config/zsh-syntax/zsh-syntax-highlighting.zsh' >> $HOME/.zshrc
 fi
